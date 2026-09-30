@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';           // new
 import 'package:provider/provider.dart';          // new
 
 import 'app_state.dart';                          // new
+import 'guest_book.dart';  
 import 'src/authentication.dart';                 // new
 import 'src/widgets.dart';
-import 'guest_book.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -42,6 +42,20 @@ class HomePage extends StatelessWidget {
           const Header("What we'll be doing"),
           const Paragraph(
             'Join us for a day full of Firebase Workshops and Pizza!',
+          ),
+          Consumer<ApplicationState>(
+            builder: (context, appState, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (appState.loggedIn) ...[
+                  const Header('Discussion'),
+                  GuestBook(
+                    addMessage: (message) =>
+                        appState.addMessageToGuestBook(message),
+                  ),
+                ],
+              ],
+            ),
           ),
           const Header('Discussion'),
           GuestBook(addMessage: (message) => print(message)),
