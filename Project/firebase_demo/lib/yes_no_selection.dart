@@ -1,30 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'app_state.dart';
 import 'src/widgets.dart';
 
-class YesNoSelection extends StatelessWidget {
+class YesNoSelection extends StatefulWidget {
   const YesNoSelection(
-      {super.key, required this.state, required this.onSelection});
+      {super.key, required this.state, required this.onSelection, required this.onNumberAttendeesChanged});
   final Attending state;
   final void Function(Attending selection) onSelection;
+  final void Function(int numAttendees) onNumberAttendeesChanged;
 
   @override
+  State<YesNoSelection> createState() => _YesNoState();
+}
+
+class _YesNoState extends State<YesNoSelection>{
+  @override
   Widget build(BuildContext context) {
-    switch (state) {
+    switch (widget.state) {
       case Attending.yes:
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
               FilledButton(
-                onPressed: () => onSelection(Attending.yes),
+                onPressed: () => widget.onSelection(Attending.yes),
                 child: const Text('YES'),
               ),
               const SizedBox(width: 8),
               TextButton(
-                onPressed: () => onSelection(Attending.no),
+                onPressed: () => widget.onSelection(Attending.no),
                 child: const Text('NO'),
+              ),
+              TextField(
+                onChanged: (value) => widget.onNumberAttendeesChanged(int.parse(value)),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Your party size',
+                ),
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
               ),
             ],
           ),
@@ -35,12 +52,12 @@ class YesNoSelection extends StatelessWidget {
           child: Row(
             children: [
               TextButton(
-                onPressed: () => onSelection(Attending.yes),
+                onPressed: () => widget.onSelection(Attending.yes),
                 child: const Text('YES'),
               ),
               const SizedBox(width: 8),
               FilledButton(
-                onPressed: () => onSelection(Attending.no),
+                onPressed: () => widget.onSelection(Attending.no),
                 child: const Text('NO'),
               ),
             ],
@@ -52,12 +69,12 @@ class YesNoSelection extends StatelessWidget {
           child: Row(
             children: [
               StyledButton(
-                onPressed: () => onSelection(Attending.yes),
+                onPressed: () => widget.onSelection(Attending.yes),
                 child: const Text('YES'),
               ),
               const SizedBox(width: 8),
               StyledButton(
-                onPressed: () => onSelection(Attending.no),
+                onPressed: () => widget.onSelection(Attending.no),
                 child: const Text('NO'),
               ),
             ],
@@ -66,3 +83,5 @@ class YesNoSelection extends StatelessWidget {
     }
   }
 }
+  
+

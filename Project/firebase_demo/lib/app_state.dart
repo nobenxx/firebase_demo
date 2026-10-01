@@ -69,7 +69,22 @@ class ApplicationState extends ChangeNotifier {
     if (attending == Attending.yes) {
       userDoc.set(<String, dynamic>{'attending': true});
     } else {
-      userDoc.set(<String, dynamic>{'attending': false});
+      userDoc.set(<String, dynamic>{'attending': false}); //THESE TWO LINES UPDATE PERSONAL ATTENDEE STATUS
+    }
+  }
+
+  int _numAttending = 0;
+
+  int get numAttending => _numAttending;
+
+  set numAttending(int amount) {
+    final userDoc = FirebaseFirestore.instance
+        .collection('attendees')
+        .doc(FirebaseAuth.instance.currentUser!.uid);
+    if (attending == Attending.yes) {
+      userDoc.set(<String, int>{'numAttending': amount});
+    } else {
+      userDoc.set(<String, int>{'numAttending': 0}); //THESE TWO LINES UPDATE PERSONAL ATTENDEE STATUS
     }
   }
 
@@ -87,7 +102,7 @@ class ApplicationState extends ChangeNotifier {
         .listen((snapshot) {
           _attendees = snapshot.docs.length;
           notifyListeners();
-        });
+        }); //UPDATES AMOUNT OF ATTENDEES
 
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
@@ -109,7 +124,7 @@ class ApplicationState extends ChangeNotifier {
               }
               notifyListeners();
             });
-        _attendingSubscription = FirebaseFirestore.instance
+        _attendingSubscription = FirebaseFirestore.instance //Checks if user is attending (checks if user with user uid is attending)
             .collection('attendees')
             .doc(user.uid)
             .snapshots()
@@ -120,8 +135,12 @@ class ApplicationState extends ChangeNotifier {
                 } else {
                   _attending = Attending.no;
                 }
+                if(snapshot.data()!['numAttending'] > -1){
+                  _numAttending = snapshot.data()!['numAttending'];
+                }
               } else {
                 _attending = Attending.unknown;
+                _numAttending = 0;
               }
               notifyListeners();
             });
